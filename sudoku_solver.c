@@ -84,3 +84,77 @@ bool isLegal(matrix mat, int row, int col, int value) {
 
     return true;
 }
+
+bool findEmptyCell(matrix mat, int *row, int *col) {
+    for (int i = 0; i < mat.size; i++) {
+        for (int j = 0; j < mat.size; j++) {
+            if (mat.mat[i][j] == 0) {
+                *row = i;
+                *col = j;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool solveSudoku(matrix mat) {
+    int row, col;
+
+    if (!findEmptyCell(mat, &row, &col)) {
+        return true;
+    }
+
+    for (int num = 1; num <= mat.size; num++) {
+        if (isLegal(mat, row, col, num)) {
+            mat.mat[row][col] = num;
+
+            if (solveSudoku(mat)) {
+                return true;
+            }
+
+            mat.mat[row][col] = 0;
+        }
+    }
+
+    return false;
+}
+
+void printSudoku(matrix mat) {
+    for (int i = 0; i < mat.size; i++) {
+        for (int j = 0; j < mat.size; j++) {
+            printf("%d ", mat.mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main(void) {
+    matrix board = init_matrix(4);
+
+    int puzzle[4][4] = {
+        {1, 0, 0, 4},
+        {0, 4, 1, 0},
+        {0, 1, 4, 0},
+        {4, 0, 0, 1}
+    };
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            board.mat[i][j] = puzzle[i][j];
+        }
+    }
+
+    printf("Original Sudoku:\n");
+    printSudoku(board);
+
+    if (solveSudoku(board)) {
+        printf("\nSolved Sudoku:\n");
+        printSudoku(board);
+    } else {
+        printf("\nNo solution found.\n");
+    }
+
+    free_matrix(board);
+    return 0;
+}
